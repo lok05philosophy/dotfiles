@@ -15,17 +15,17 @@ export PS1="\[\033[1;32m\]\u@\h\\[\033[34m\] \w $ \[\033[m\]"
 # WP CLI Auto Completion
 source ~/wp-completion.bash
 
-# MAMP PHP as default
-export MAMP_PHP=/Applications/MAMP/bin/php/php5.6.1/bin
-export PATH="$MAMP_PHP:$PATH"
+# MAMP PHP Path
+MAMP_PHP=/Applications/MAMP/bin/php/php5.6.10/bin
 
-### Git
-PATH="/usr/local/git/bin:${PATH}"
-export PATH
+### Git Path
+GIT=/usr/local/git/bin
 
-# Setting PATH for Python 2.7
-# The orginal version is saved in .bash_profile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
+### Python Path
+PYTHON=/Library/Frameworks/Python.framework/Versions/2.7/bin
+
+### Export Path
+PATH="$MAMP_PHP:$GIT:$PYTHON:${PATH}"
 export PATH
 
 ### Aliases
@@ -38,5 +38,3 @@ alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall F
 
 #DNS Flush Alias
 alias dnsFlush='sudo discoveryutil mdnsflushcache;sudo discoveryutil udnsflushcaches'
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
