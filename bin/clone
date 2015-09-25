@@ -1,0 +1,73 @@
+#!/bin/sh
+if [[ $1 = "-v" ]]; then
+    echo "Version 0.0.1"
+elif [[ $1 ]] && [[ $2 ]] && [[ $3 ]]; then
+    DIRECTION="$(echo $1 | tr '[A-Z]' '[a-z]')"
+    PROJECT=${PWD##*/}
+    NOW=$(date +"%Y-%m-%d-%H-%M-%S")
+    if [[ $DIRECTION = "to" ]]; then
+        REMOTE=$2
+        BRANCH=$3
+        wp db export "db/latestdb-$NOW.sql"
+        wp db export "db/latestdb.sql"
+        git add --all
+        echo "Success: Added Files"
+        git commit -am \"Updated From Local Server\"
+        echo "Success: Committed Files"
+        git push $REMOTE $BRANCH
+        echo "Success: Deployed Files"
+        ssh peterjohnhunt@creativelunchbox.com "
+        cd ~/public_html/${REMOTE}/${PROJECT}
+        wp db export \"db/latestdb-${NOW}.sql\"
+        wp db import \"db/latestdb.sql\"
+        echo \"Success: Imported DB\"
+        exit
+        "
+    elif [[ $DIRECTION = "from" ]]; then
+        REMOTE=$2
+        BRANCH=$3
+        ssh peterjohnhunt@creativelunchbox.com "
+        cd ~/public_html/${REMOTE}/${PROJECT}
+        wp db export \"db/latestdb-$NOW.sql\"
+        wp db export \"db/latestdb.sql\"
+        git --work-tree=/home/peterjohnhunt/public_html/${REMOTE}/${PROJECT} --git-dir=/home/peterjohnhunt/git/${REMOTE}/${PROJECT}.git/ add --all
+        echo \"Success: Added Files\"
+        git --work-tree=/home/peterjohnhunt/public_html/${REMOTE}/${PROJECT} --git-dir=/home/peterjohnhunt/git/${REMOTE}/${PROJECT}.git/ commit -am \"Updated From ${REMOTE} Server\"
+        echo \"Success: Committed Files\"
+        exit
+        "
+        git pull $REMOTE $BRANCH
+        echo "Success: Deployed Files"
+        wp db export "db/latestdb-$NOW.sql"
+        wp db import "db/latestdb.sql"
+    elif [[ $DIRECTION = "between" ]] && [[ $4 ]]; then
+        FROMREMOTE=$2
+        TOREMOTE=$3
+        BRANCH=$4
+        ssh peterjohnhunt@creativelunchbox.com "
+        cd ~/public_html/${FROMREMOTE}/${PROJECT}
+        wp db export \"db/latestdb-${FROMREMOTE}-${NOW}.sql\"
+        wp db export \"db/latestdb.sql\"
+        git --work-tree=/home/peterjohnhunt/public_html/${FROMREMOTE}/${PROJECT} --git-dir=/home/peterjohnhunt/git/${FROMREMOTE}/${PROJECT}.git/ add --all
+        echo \"Success: Added Files\"
+        git --work-tree=/home/peterjohnhunt/public_html/${FROMREMOTE}/${PROJECT} --git-dir=/home/peterjohnhunt/git/${FROMREMOTE}/${PROJECT}.git/ commit -am \"Updated From ${FROMREMOTE} Server\"
+        echo \"Success: Committed Files\"
+        cd ~/public_html/${TOREMOTE}/${PROJECT}
+        wp db export \"db/latestdb-${TOREMOTE}-${NOW}.sql\"
+        git --work-tree=/home/peterjohnhunt/public_html/${TOREMOTE}/${PROJECT} --git-dir=/home/peterjohnhunt/git/${TOREMOTE}/${PROJECT}.git/ add --all
+        echo \"Success: Added Files\"
+        git --work-tree=/home/peterjohnhunt/public_html/${TOREMOTE}/${PROJECT} --git-dir=/home/peterjohnhunt/git/${TOREMOTE}/${PROJECT}.git/ commit -am \"Updated From ${TOREMOTE} Server\"
+        echo \"Success: Committed Files\"
+        git --work-tree=/home/peterjohnhunt/public_html/${TOREMOTE}/${PROJECT} --git-dir=/home/peterjohnhunt/git/${FROMREMOTE}/${PROJECT}.git/ checkout -f ${BRANCH}
+        echo \"Success: Deployed Files\"
+        wp db import \"db/latestdb.sql\"
+        exit
+        "
+    else
+        echo "Direction Parameter Must Be 'To', 'From', or 'Between'"
+    fi
+else
+    echo "Not Enough Arguments"
+    echo "Expecting \"(to/from)\" \"(\$remote)\" \"(\$branch)\" or"
+    echo "Expecting \"(between)\" \"(\$from_remote)\" \"(\$to_remote)\" \"(\$branch)\""
+fi

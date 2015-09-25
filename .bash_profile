@@ -10,23 +10,39 @@ export CLICOLOR=1
 #Change User Display Text
 export PS1="\[\033[1;32m\]\u@\h\\[\033[34m\] \w $ \[\033[m\]"
 
-### WP CLI
-
-# WP CLI Auto Completion
-source ~/wp-completion.bash
-
 # MAMP PHP Path
 MAMP_PHP=/Applications/MAMP/bin/php/php5.6.10/bin
 
-### Git Path
+# MAMP MySQL Path
+MAMP_MYSQL=/Applications/MAMP/Library/bin/
+
+# User Path
+USER_PATH=/Users/PeterJohn/dotfiles/bin/
+
+# Git Path
 GIT=/usr/local/git/bin
 
-### Python Path
+# Python Path
 PYTHON=/Library/Frameworks/Python.framework/Versions/2.7/bin
 
-### Export Path
-PATH="$MAMP_PHP:$GIT:$PYTHON:${PATH}"
+# NVM Path
+NVM_DIR=/Users/PeterJohn/.nvm
+
+# RVM Path
+RVM_DIR=/Users/PeterJohn/.rvm/bin
+
+# Export Path
+PATH="$USER_PATH:$MAMP_PHP:$MAMP_MYSQL:$GIT:$PYTHON:$NVM_DIR:$RVM_DIR:${PATH}"
 export PATH
+
+# Start NVM
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+# NVM Auto Completion
+[[ -r $NVM_DIR/bash_completion ]] && . $NVM_DIR/bash_completion
+
+# WP CLI Auto Completion
+source ~/dotfiles/wp-completion.bash
 
 ### Aliases
 
@@ -37,4 +53,4 @@ alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall 
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
 
 #DNS Flush Alias
-alias dnsFlush='sudo discoveryutil mdnsflushcache;sudo discoveryutil udnsflushcaches'
+alias dnsFlush='sudo killall -HUP mDNSResponder'

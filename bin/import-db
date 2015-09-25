@@ -1,0 +1,4 @@
+#!/bin/sh
+NOW=$(date +"%Y-%m-%d-%H-%M-%S")
+wp db export "db/latestdb-$NOW.sql"
+wp db import "db/latestdb.sql"

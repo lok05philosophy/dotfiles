@@ -1,0 +1,18 @@
+#!/bin/sh
+NOW=$(date +"%Y-%m-%d-%H-%M-%S")
+wp db export "db/latestdb-$NOW.sql"
+wp db export "db/latestdb.sql"
+read -p "Commit Database? (y/n): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    git add --all
+	git commit -am "Updated Latest DB File and Archived DB File"
+	echo "Committed Data To Git Repository"
+	read -p "Push To Github? (y/n): " -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+		git push
+	fi
+fi
