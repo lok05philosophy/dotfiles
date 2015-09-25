@@ -42,7 +42,10 @@ export PATH
 [[ -r $NVM_DIR/bash_completion ]] && . $NVM_DIR/bash_completion
 
 # WP CLI Auto Completion
-source ~/dotfiles/wp-completion.bash
+source ~/dotfiles/bin/wp-completion.bash
+
+# SSH Auto Completion
+source ~/dotfiles/bin/ssh-completion.bash
 
 ### Aliases
 
